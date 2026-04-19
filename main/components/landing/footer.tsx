@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { X } from "lucide-react";
 
 export function Footer() {
@@ -26,7 +27,23 @@ export function Footer() {
             <h4 className="font-semibold text-white">Product</h4>
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <Link
+                  href="/login"
+                  className="hover:text-white transition-colors"
+                >
+                  Sign In
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/signup"
+                  className="hover:text-white transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </li>
+              <li>
+                <a href="#features" className="hover:text-white transition-colors">
                   Features
                 </a>
               </li>

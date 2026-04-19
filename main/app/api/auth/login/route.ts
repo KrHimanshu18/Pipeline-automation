@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/utils/password";
+import { AUTH_USER_ID_COOKIE } from "@/lib/constants/auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,24 +40,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create response with user data
+    const { password: _password, ...publicUser } = user;
+
     const response = NextResponse.json(
       {
         success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-          fullName: user.fullName,
-          profileImage: user.profileImage,
-        },
+        user: publicUser,
         message: "Logged in successfully",
       },
       { status: 200 },
     );
 
     // Set cookie
-    response.cookies.set("userId", user.id.toString(), {
+    response.cookies.set(AUTH_USER_ID_COOKIE, user.id.toString(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

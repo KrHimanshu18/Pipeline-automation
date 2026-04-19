@@ -1,37 +1,28 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { AUTH_USER_ID_COOKIE } from "@/lib/constants/auth";
+import { userPublicSelect } from "@/lib/prisma/user-public-select";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
+  const userId = cookieStore.get(AUTH_USER_ID_COOKIE)?.value;
 
-  if (!userId) {
+  if (!userId?.trim()) {
+    return null;
+  }
+
+  const id = parseInt(userId, 10);
+  if (Number.isNaN(id)) {
     return null;
   }
 
   try {
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        fullName: true,
-        profileImage: true,
-        phone: true,
-        location: true,
-        company: true,
-        bio: true,
-      },
+      where: { id },
+      select: userPublicSelect,
     });
     return user;
-  } catch (error) {
+  } catch {
     return null;
   }
-}
-
-export function setAuthCookie(userId: number) {
-  const cookieStore = cookies();
-  // Since cookies() returns a Promise in async context, we need to handle this properly
-  return { userId: userId.toString() };
 }

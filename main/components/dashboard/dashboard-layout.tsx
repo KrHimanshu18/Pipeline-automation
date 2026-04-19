@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { AddRepository } from "@/components/dashboard/add-repository";
 import { ViewRepositories } from "@/components/dashboard/view-repositories";
 import { Profile } from "@/components/dashboard/profile";
+import { RepositoriesProvider } from "@/lib/contexts/repositories-context";
 
 export function DashboardLayout() {
   const [activeTab, setActiveTab] = useState<
@@ -25,14 +26,14 @@ export function DashboardLayout() {
   };
 
   return (
-    <div className="flex h-screen bg-black">
-      {/* Sidebar */}
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+    <RepositoriesProvider>
+      <div className="flex h-screen bg-black">
+        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto">
-        <div className="p-8 max-w-7xl">{renderContent()}</div>
-      </main>
-    </div>
+        <main className="flex-1 overflow-auto">
+          <div className="p-8 max-w-7xl">{renderContent()}</div>
+        </main>
+      </div>
+    </RepositoriesProvider>
   );
 }

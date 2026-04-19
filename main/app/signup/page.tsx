@@ -1,5 +1,6 @@
 import { AuthLayout } from "@/components/auth/auth-layout";
 import { SignUpForm } from "@/components/auth/signup-form";
+import { RedirectIfAuthenticated } from "@/components/auth/redirect-if-authenticated";
 
 export const metadata = {
   title: "Sign Up - PipelineAI",
@@ -9,7 +10,9 @@ export const metadata = {
 export default function SignUpPage() {
   return (
     <AuthLayout>
-      <SignUpForm />
+      <RedirectIfAuthenticated>
+        <SignUpForm />
+      </RedirectIfAuthenticated>
     </AuthLayout>
   );
 }

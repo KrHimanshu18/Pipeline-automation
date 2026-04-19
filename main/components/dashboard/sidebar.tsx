@@ -2,6 +2,8 @@
 
 import { Plus, GitBranch, User, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/contexts/auth-context";
 
 interface SidebarProps {
   activeTab: "add-repo" | "view-repos" | "profile";
@@ -9,6 +11,20 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      router.push("/login");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   const tabs = [
     {
       id: "add-repo" as const,
@@ -35,7 +51,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
       {/* Logo & Brand */}
       <div className="p-6 border-b border-zinc-800">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500" />
+          <div className="h-10 w-10 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500" />
           <div>
             <h1 className="text-lg font-bold text-white">PipelineAI</h1>
             <p className="text-xs text-gray-400">Dashboard</p>
@@ -55,12 +71,12 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
               onClick={() => onTabChange(tab.id)}
               className={`w-full flex items-start gap-3 px-4 py-3 rounded-lg transition-all ${
                 isActive ?
-                  "bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-cyan-500/50 text-cyan-400"
+                  "bg-linear-to-r from-blue-500/20 to-cyan-500/20 border border-cyan-500/50 text-cyan-400"
                 : "text-gray-400 hover:bg-zinc-800 hover:text-gray-300"
               }`}
             >
               <Icon
-                className={`h-5 w-5 mt-0.5 flex-shrink-0 ${isActive ? "text-cyan-400" : ""}`}
+                className={`h-5 w-5 mt-0.5 shrink-0 ${isActive ? "text-cyan-400" : ""}`}
               />
               <div className="text-left">
                 <div className="font-medium text-sm">{tab.label}</div>
@@ -76,7 +92,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
         <div className="px-4 py-3 bg-zinc-800/50 rounded-lg">
           <div className="text-xs text-gray-400 mb-1">Logged in as</div>
           <div className="text-sm font-medium text-white truncate">
-            john.doe@example.com
+            {user?.email ?? "—"}
           </div>
         </div>
         <button

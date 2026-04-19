@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center overflow-hidden px-4">
@@ -12,10 +14,13 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 backdrop-blur p-8 md:p-12">
           {/* Logo & Brand */}
-          <div className="mb-8 flex flex-col items-center gap-3">
+          <Link
+            href="/"
+            className="mb-8 flex flex-col items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-cyan-500"
+          >
             <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500" />
             <h2 className="text-2xl font-bold text-white">PipelineAI</h2>
-          </div>
+          </Link>
 
           {/* Form Content */}
           {children}

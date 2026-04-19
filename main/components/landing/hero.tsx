@@ -41,7 +41,7 @@ export function Hero() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 pt-4">
             <button
               onClick={() => router.push("/signup")}
               className="w-full sm:w-auto px-8 py-4 rounded-lg bg-linear-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
@@ -49,7 +49,17 @@ export function Hero() {
               Start Free Trial
               <ArrowRight size={20} />
             </button>
-            <button className="w-full sm:w-auto px-8 py-4 rounded-lg border border-zinc-700 text-white font-semibold hover:bg-zinc-900/50 transition-colors">
+            <button
+              type="button"
+              onClick={() => router.push("/login")}
+              className="w-full sm:w-auto px-8 py-4 rounded-lg border border-zinc-700 text-white font-semibold hover:bg-zinc-900/50 transition-colors"
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              className="w-full sm:w-auto px-8 py-4 rounded-lg border border-zinc-700 text-gray-300 font-semibold hover:bg-zinc-900/50 transition-colors"
+            >
               Watch Demo
             </button>
           </div>

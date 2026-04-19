@@ -12,6 +12,10 @@ interface User {
   location?: string | null;
   company?: string | null;
   bio?: string | null;
+  createdAt: string;
+  notifyPipelineFailures: boolean;
+  notifyDeploymentUpdates: boolean;
+  notifyWeeklyDigest: boolean;
 }
 
 interface AuthContextType {

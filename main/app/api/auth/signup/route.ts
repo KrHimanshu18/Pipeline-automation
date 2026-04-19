@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/utils/password";
+import { AUTH_USER_ID_COOKIE } from "@/lib/constants/auth";
+import { userPublicSelect } from "@/lib/prisma/user-public-select";
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,12 +49,7 @@ export async function POST(request: NextRequest) {
         password: hashedPassword,
         fullName: fullName || null,
       },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        fullName: true,
-      },
+      select: userPublicSelect,
     });
 
     // Create response with cookie
@@ -66,7 +63,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Set cookie
-    response.cookies.set("userId", user.id.toString(), {
+    response.cookies.set(AUTH_USER_ID_COOKIE, user.id.toString(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",

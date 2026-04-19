@@ -1,27 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { AUTH_USER_ID_COOKIE } from "@/lib/constants/auth";
+import { userPublicSelect } from "@/lib/prisma/user-public-select";
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.cookies.get("userId")?.value;
+    const rawId = request.cookies.get(AUTH_USER_ID_COOKIE)?.value;
 
-    if (!userId) {
+    if (!rawId?.trim()) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+
+    const id = parseInt(rawId, 10);
+    if (Number.isNaN(id)) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        fullName: true,
-        profileImage: true,
-        phone: true,
-        location: true,
-        company: true,
-        bio: true,
-      },
+      where: { id },
+      select: userPublicSelect,
     });
 
     if (!user) {
