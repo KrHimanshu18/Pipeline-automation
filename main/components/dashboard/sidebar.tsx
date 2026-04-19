@@ -79,9 +79,13 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
             john.doe@example.com
           </div>
         </div>
-        <button className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors text-sm font-medium">
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+        >
           <LogOut size={16} />
-          Sign Out
+          {isLoggingOut ? "Signing out..." : "Sign Out"}
         </button>
       </div>
     </aside>
