@@ -7,7 +7,7 @@ export function CTA() {
   const router = useRouter();
 
   return (
-    <section className="relative py-20 md:py-32 bg-gradient-to-b from-black to-zinc-950">
+    <section className="relative py-20 md:py-32 bg-linear-to-b from-black to-zinc-950">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Background decorations */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -58,7 +58,7 @@ export function CTA() {
               <button
                 type="button"
                 onClick={() => router.push("/signup")}
-                className="w-full sm:w-auto px-8 py-4 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 rounded-lg bg-linear-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
               >
                 Start Free Trial
                 <ArrowRight size={20} />
