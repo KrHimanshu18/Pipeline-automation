@@ -182,7 +182,7 @@ export function WorkflowsViewer({
                     <span className="text-xs text-gray-400">
                       Commit:{" "}
                       <span className="font-mono text-gray-300">
-                        {run.commitSha.substring(0, 7)}
+                        {run.commitSha?.substring(0, 7) ?? "N/A"}
                       </span>
                     </span>
                   </div>

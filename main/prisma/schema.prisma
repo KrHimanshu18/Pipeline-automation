@@ -85,7 +85,7 @@ model PipelineLog {
 
 model WorkflowRun {
   id              Int       @id @default(autoincrement())
-  githubRunId     Int       @unique
+  githubRunId     BigInt       @unique
   repositoryId    Int
   userId          Int
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -104,7 +104,7 @@ model WorkflowRun {
   updatedAt       DateTime
   completedAt     DateTime?
   
-  logs            String?      // workflow logs content
+  logs            String?      @db.Text  // workflow logs content (large text)
   logsFetched     Boolean      @default(false)
   
   createdAtDb     DateTime  @default(now())

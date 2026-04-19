@@ -52,20 +52,29 @@ export async function GET(request: NextRequest) {
       parseInt(runId),
     );
 
-    // Store logs in database
+    // Store logs in database (cleaned of null bytes)
     if (logs) {
+      const cleanedLogs = logs
+        .replace(/\u0000/g, "") // Remove null bytes
+        .trim();
+
       await prisma.workflowRun.update({
         where: { githubRunId: parseInt(runId) },
         data: {
-          logs,
+          logs: cleanedLogs,
           logsFetched: true,
         },
+      });
+
+      return NextResponse.json({
+        success: true,
+        logs: cleanedLogs,
       });
     }
 
     return NextResponse.json({
       success: true,
-      logs: logs || "No logs available",
+      logs: "No logs available for this workflow run",
     });
   } catch (error) {
     console.error("Workflow logs error:", error);

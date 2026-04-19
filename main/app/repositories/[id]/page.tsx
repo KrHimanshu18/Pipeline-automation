@@ -48,7 +48,7 @@ export default async function RepositoryLogsPage({ params }: Props) {
               <div className="flex justify-between">
                 <div>
                   <p className="text-white font-medium">
-                    Commit: {run.commitSha.slice(0, 7)}
+                    Commit: {run.commitSha?.slice(0, 7) ?? "N/A"}
                   </p>
                   <p className="text-sm text-gray-400">Branch: {run.branch}</p>
                 </div>

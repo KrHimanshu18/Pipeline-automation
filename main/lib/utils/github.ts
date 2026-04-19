@@ -70,7 +70,9 @@ export async function getWorkflowRunLogs(
       });
 
       if (logsResponse.ok) {
-        return await logsResponse.text();
+        const buffer = await logsResponse.arrayBuffer();
+        const combinedLogs = await extractAndCombineLogsFromZip(buffer);
+        return combinedLogs;
       }
     }
 
@@ -120,5 +122,56 @@ export async function testGitHubToken(token: string) {
       valid: false,
       user: null,
     };
+  }
+}
+
+// Helper function to extract and combine logs from ZIP file
+async function extractAndCombineLogsFromZip(
+  buffer: ArrayBuffer,
+): Promise<string> {
+  const AdmZip = require("adm-zip");
+
+  try {
+    const zip = new AdmZip(Buffer.from(buffer));
+    const zipEntries = zip.getEntries();
+
+    const logFiles: {
+      name: string;
+      content: string;
+      order: number;
+    }[] = [];
+
+    zipEntries.forEach((entry: any) => {
+      const fileName = entry.entryName;
+      const ext = fileName.split(".").pop();
+
+      if (ext === "txt" && !entry.isDirectory) {
+        const content = entry.getData().toString("utf-8");
+
+        // Extract step order from filename (e.g., "2_Checkout code.txt" -> 2)
+        const match = fileName.match(/^(\d+)_/);
+        const order = match ? parseInt(match[1], 10) : 9999;
+        const name = fileName
+          .replace(/^[0-9_]+/, "")
+          .replace(".txt", "")
+          .trim();
+
+        logFiles.push({ name, content, order });
+      }
+    });
+
+    // Sort by order and combine
+    const sorted = logFiles.sort((a, b) => a.order - b.order);
+    const combined = sorted
+      .map(
+        (file) =>
+          `${"=".repeat(60)}\n${file.name.toUpperCase()}\n${"=".repeat(60)}\n${file.content}\n`,
+      )
+      .join("\n");
+
+    return combined || "No logs available";
+  } catch (error) {
+    console.error("Error extracting logs from ZIP:", error);
+    throw new Error("Failed to extract workflow logs");
   }
 }
