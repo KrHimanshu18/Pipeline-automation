@@ -36,9 +36,47 @@ model Repository {
   description   String?
   userId        Int
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pipelineRuns  PipelineRun[]
+
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   @@unique([userId, url])
   @@index([userId])
+}
+
+model PipelineRun {
+  id            Int        @id @default(autoincrement())
+  repositoryId  Int
+  repository    Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  commitSha     String
+  branch        String
+  status        String     // success | failure | cancelled
+  triggeredBy   String?    // username (optional)
+
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  duration      Int?       // in seconds
+
+  logs          PipelineLog[]
+
+  createdAt     DateTime   @default(now())
+
+  @@index([repositoryId])
+  @@index([commitSha])
+}
+
+model PipelineLog {
+  id            Int         @id @default(autoincrement())
+  pipelineRunId Int
+  pipelineRun   PipelineRun @relation(fields: [pipelineRunId], references: [id], onDelete: Cascade)
+
+  content       String      // full log (or chunk)
+  size          Int?        // optional (bytes)
+  chunkIndex    Int?        // if splitting logs
+
+  createdAt     DateTime    @default(now())
+
+  @@index([pipelineRunId])
 }

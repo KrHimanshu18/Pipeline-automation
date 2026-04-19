@@ -4,10 +4,12 @@ import { GitBranch, ExternalLink, Trash2, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useRepositories } from "@/lib/contexts/repositories-context";
 import { formatRelativeTime } from "@/lib/utils/format-relative-time";
+import { useRouter } from "next/navigation";
 
 type FilterTab = "all" | "active" | "inactive";
 
 export function ViewRepositories() {
+  const router = useRouter();
   const { repositories, isLoading, error, refetch } = useRepositories();
   const [filter, setFilter] = useState<FilterTab>("all");
   const [search, setSearch] = useState("");
@@ -90,6 +92,10 @@ export function ViewRepositories() {
     </button>
   );
 
+  const handleCardClick = (repoId: number) => {
+    router.push(`/repositories/${repoId}`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -104,6 +110,7 @@ export function ViewRepositories() {
           {error}
         </div>
       )}
+
       {deleteMessage && (
         <div className="rounded-lg bg-red-500/20 border border-red-500/50 p-3 text-sm text-red-400">
           {deleteMessage}
@@ -116,6 +123,7 @@ export function ViewRepositories() {
           {filterBtn("active", "Active")}
           {filterBtn("inactive", "Inactive")}
         </div>
+
         <input
           type="search"
           value={search}
@@ -134,27 +142,34 @@ export function ViewRepositories() {
           {filtered.map((repo) => {
             const statusLabel =
               repo.status.charAt(0).toUpperCase() + repo.status.slice(1);
+
             return (
               <div
                 key={repo.id}
-                className="border border-zinc-700 rounded-lg bg-zinc-900/50 hover:bg-zinc-800/50 transition-all p-6"
+                onClick={() => handleCardClick(repo.id)}
+                className="cursor-pointer border border-zinc-700 rounded-lg bg-zinc-900/50 hover:bg-zinc-800/50 transition-all p-6"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0 space-y-3">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`h-10 w-10 rounded-lg ${getProviderColor(repo.provider)} flex items-center justify-center shrink-0`}
+                        className={`h-10 w-10 rounded-lg ${getProviderColor(
+                          repo.provider,
+                        )} flex items-center justify-center shrink-0`}
                       >
                         <GitBranch className="h-5 w-5 text-white" />
                       </div>
+
                       <div className="min-w-0">
                         <h3 className="font-semibold text-white truncate">
                           {repo.name}
                         </h3>
+
                         <a
                           href={repo.url}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors truncate block"
                         >
                           {repo.url}
@@ -164,16 +179,20 @@ export function ViewRepositories() {
 
                     <div className="flex flex-wrap gap-3 items-center">
                       <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(repo.status)}`}
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                          repo.status,
+                        )}`}
                       >
                         {statusLabel}
                       </span>
+
                       <span className="text-xs text-gray-400">
                         Branch:{" "}
                         <span className="font-mono text-gray-300">
                           {repo.branch}
                         </span>
                       </span>
+
                       <span className="text-xs text-gray-400">
                         Updated {formatRelativeTime(repo.updatedAt)}
                       </span>
@@ -185,23 +204,30 @@ export function ViewRepositories() {
                       href={repo.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                       className="p-2 rounded-lg text-gray-400 hover:bg-zinc-700 hover:text-cyan-400 transition-colors"
                       title="Open in new tab"
                     >
                       <ExternalLink size={18} />
                     </a>
+
                     <button
                       type="button"
                       disabled
+                      onClick={(e) => e.stopPropagation()}
                       className="p-2 rounded-lg text-gray-500 cursor-not-allowed opacity-50"
                       title="Coming soon"
                     >
                       <Settings size={18} />
                     </button>
+
                     <button
                       type="button"
                       disabled={deletingId === repo.id}
-                      onClick={() => void handleDelete(repo.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleDelete(repo.id);
+                      }}
                       className="p-2 rounded-lg text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition-colors disabled:opacity-50"
                       title="Delete"
                     >
