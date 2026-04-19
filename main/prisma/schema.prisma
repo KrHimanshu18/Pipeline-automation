@@ -18,12 +18,14 @@ model User {
   location      String?
   company       String?
   bio           String?
+  githubToken   String?
   notifyPipelineFailures   Boolean @default(true)
   notifyDeploymentUpdates  Boolean @default(true)
   notifyWeeklyDigest       Boolean @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   repositories  Repository[]
+  workflowRuns  WorkflowRun[]
 }
 
 model Repository {
@@ -79,4 +81,37 @@ model PipelineLog {
   createdAt     DateTime    @default(now())
 
   @@index([pipelineRunId])
+}
+
+model WorkflowRun {
+  id              Int       @id @default(autoincrement())
+  githubRunId     Int       @unique
+  repositoryId    Int
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  workflowName    String
+  workflowFile    String
+  name            String
+  status          String    // completed | in_progress | queued | requested | waiting
+  conclusion      String?   // success | failure | neutral | cancelled | skipped | timed_out | action_required
+  
+  branch          String
+  commitSha       String
+  commitMessage   String?
+  
+  createdAt       DateTime
+  updatedAt       DateTime
+  completedAt     DateTime?
+  
+  logs            String?      // workflow logs content
+  logsFetched     Boolean      @default(false)
+  
+  createdAtDb     DateTime  @default(now())
+  updatedAtDb     DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([repositoryId])
+  @@index([status])
+  @@index([createdAt])
 }

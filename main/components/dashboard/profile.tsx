@@ -16,6 +16,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/contexts/auth-context";
+import { GitHubTokenSetup } from "./github-token-setup";
 
 function displayOrDash(value: string | null | undefined) {
   const t = typeof value === "string" ? value.trim() : "";
@@ -486,6 +487,8 @@ export function Profile() {
           </button>
         </div>
       </div>
+
+      <GitHubTokenSetup onSuccess={() => void refreshUser()} />
 
       <div className="border border-red-500/50 rounded-lg bg-red-500/5 p-6 space-y-4">
         <h3 className="text-lg font-semibold text-red-400">Danger Zone</h3>

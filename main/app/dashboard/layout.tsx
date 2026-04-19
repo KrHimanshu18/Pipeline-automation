@@ -1,15 +1,28 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/utils/auth";
+"use client";
 
-export default async function DashboardLayout({
+import { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { RepositoriesProvider } from "@/lib/contexts/repositories-context";
+import { useAuth } from "@/lib/contexts/auth-context";
+
+export default function DashboardLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
-  const user = await getCurrentUser();
-  if (!user) {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     redirect("/login");
   }
 
-  return children;
+  return <RepositoriesProvider>{children}</RepositoriesProvider>;
 }

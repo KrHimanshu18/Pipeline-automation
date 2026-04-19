@@ -93,7 +93,7 @@ export function ViewRepositories() {
   );
 
   const handleCardClick = (repoId: number) => {
-    router.push(`/repositories/${repoId}`);
+    router.push(`/dashboard/repositories/${repoId}`);
   };
 
   return (
