@@ -53,11 +53,11 @@ export function HowItWorks() {
               <div key={index} className="flex gap-8 items-start">
                 {/* Step number and line */}
                 <div className="flex flex-col items-center">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
+                  <div className="h-12 w-12 rounded-full bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-lg shrink-0">
                     {step.step}
                   </div>
                   {index < steps.length - 1 && (
-                    <div className="h-16 w-0.5 bg-gradient-to-b from-cyan-500 to-transparent my-4" />
+                    <div className="h-16 w-0.5 bg-linear-to-b from-cyan-500 to-transparent my-4" />
                   )}
                 </div>
 

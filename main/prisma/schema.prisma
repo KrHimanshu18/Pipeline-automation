@@ -7,8 +7,34 @@ datasource db {
   provider = "postgresql"
 }
 
-model User { 
-  id    Int     @id @default(autoincrement()) 
-  email String  @unique
-  name  String?
+model User {
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  username      String        @unique
+  password      String
+  fullName      String?
+  profileImage  String?
+  phone         String?
+  location      String?
+  company       String?
+  bio           String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  repositories  Repository[]
+}
+
+model Repository {
+  id            Int           @id @default(autoincrement())
+  name          String
+  url           String
+  provider      String        @default("github")
+  branch        String        @default("main")
+  status        String        @default("connected")
+  description   String?
+  userId        Int
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([userId, url])
 }

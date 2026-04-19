@@ -85,10 +85,10 @@ export function Features() {
                 className="group relative p-6 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/50 transition-all hover:border-zinc-700"
               >
                 {/* Hover glow effect */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all" />
+                <div className="absolute inset-0 rounded-xl bg-linear-to-r from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all" />
 
                 <div className="relative space-y-4">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                  <div className="h-12 w-12 rounded-lg bg-linear-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
                     <Icon className="h-6 w-6 text-cyan-400" />
                   </div>
 

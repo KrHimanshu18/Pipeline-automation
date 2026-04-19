@@ -4,7 +4,7 @@ import { ArrowRight, Zap } from "lucide-react";
 
 export function CTA() {
   return (
-    <section className="relative py-20 md:py-32 bg-gradient-to-b from-black to-zinc-950">
+    <section className="relative py-20 md:py-32 bg-linear-to-b from-black to-zinc-950">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Background decorations */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -12,7 +12,7 @@ export function CTA() {
           <div className="absolute bottom-0 right-0 w-80 h-80 bg-cyan-600/10 rounded-full blur-3xl" />
         </div>
 
-        <div className="relative rounded-2xl border border-zinc-700 bg-gradient-to-r from-zinc-900/80 to-zinc-800/80 backdrop-blur p-12 md:p-16">
+        <div className="relative rounded-2xl border border-zinc-700 bg-linear-to-r from-zinc-900/80 to-zinc-800/80 backdrop-blur p-12 md:p-16">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-500/50 bg-cyan-500/10">
@@ -52,7 +52,7 @@ export function CTA() {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <button className="w-full sm:w-auto px-8 py-4 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+              <button className="w-full sm:w-auto px-8 py-4 rounded-lg bg-linear-to-r from-blue-500 to-cyan-500 text-white font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
                 Start Free Trial
                 <ArrowRight size={20} />
               </button>

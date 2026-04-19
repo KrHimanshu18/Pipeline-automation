@@ -2,17 +2,19 @@
 
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function Header() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-zinc-800 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60">
+    <header className="fixed top-0 z-50 w-full border-b border-zinc-800 bg-black/95 backdrop-blur supports-backdrop-filter:bg-black/60">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500" />
+            <div className="h-8 w-8 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500" />
             <span className="text-xl font-bold text-white">PipelineAI</span>
           </div>
 
@@ -40,10 +42,16 @@ export function Header() {
 
           {/* CTA Buttons */}
           <div className="hidden gap-4 md:flex">
-            <button className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+            <button
+              onClick={() => router.push("/login")}
+              className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+            >
               Sign In
             </button>
-            <button className="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 transition-all">
+            <button
+              onClick={() => router.push("/signup")}
+              className="px-4 py-2 text-sm font-medium rounded-lg bg-linear-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 transition-all"
+            >
               Get Started
             </button>
           </div>
@@ -81,10 +89,16 @@ export function Header() {
               How It Works
             </a>
             <div className="flex flex-col gap-2 pt-4 border-t border-zinc-800">
-              <button className="w-full px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+              <button
+                onClick={() => router.push("/login")}
+                className="w-full px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+              >
                 Sign In
               </button>
-              <button className="w-full px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 transition-all">
+              <button
+                onClick={() => router.push("/signup")}
+                className="w-full px-4 py-2 text-sm font-medium rounded-lg bg-linear-to-r from-blue-500 to-cyan-500 text-white hover:from-blue-600 hover:to-cyan-600 transition-all"
+              >
                 Get Started
               </button>
             </div>

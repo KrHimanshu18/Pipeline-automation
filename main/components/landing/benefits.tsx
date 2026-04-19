@@ -37,7 +37,7 @@ export function Benefits() {
   return (
     <section
       id="benefits"
-      className="relative py-20 md:py-32 bg-gradient-to-b from-black to-zinc-900"
+      className="relative py-20 md:py-32 bg-linear-to-b from-black to-zinc-900"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
@@ -58,16 +58,16 @@ export function Benefits() {
                 key={index}
                 className="group relative p-8 rounded-xl border border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800 transition-all"
               >
-                {/* Background gradient */}
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/5 to-cyan-500/5 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all" />
+                {/* Background linear */}
+                <div className="absolute inset-0 rounded-xl bg-linear-to-r from-blue-500/5 to-cyan-500/5 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 transition-all" />
 
                 <div className="relative space-y-4">
                   <div className="flex items-start justify-between">
-                    <div className="h-14 w-14 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0">
+                    <div className="h-14 w-14 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center shrink-0">
                       <Icon className="h-7 w-7 text-white" />
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                      <p className="text-2xl font-bold bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                         {benefit.metric}
                       </p>
                     </div>

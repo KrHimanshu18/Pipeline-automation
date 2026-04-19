@@ -12,7 +12,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500" />
+              <div className="h-8 w-8 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500" />
               <span className="text-lg font-bold text-white">PipelineAI</span>
             </div>
             <p className="text-sm text-gray-400">
