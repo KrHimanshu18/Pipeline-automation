@@ -42,6 +42,9 @@ export default function WorkflowPage() {
   const [logs, setLogs] = useState("");
   const [logsLoading, setLogsLoading] = useState(false);
   const [logsError, setLogsError] = useState("");
+  const [aiAnalysis, setAiAnalysis] = useState<string>("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
 
   useEffect(() => {
     if (repository) {
@@ -73,10 +76,46 @@ export default function WorkflowPage() {
       }
 
       setWorkflow(foundWorkflow);
+
+      // Automatically fetch logs for AI analysis
+      fetchLogsForAnalysis(foundWorkflow.id, foundWorkflow);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLogsForAnalysis = async (
+    workflowId: number,
+    workflowData: WorkflowRun,
+  ) => {
+    console.log(
+      "[Client] Fetching logs for AI analysis, workflowId:",
+      workflowId,
+    );
+    try {
+      const response = await fetch(
+        `/api/github/logs?runId=${workflowId}&repoId=${repoId}`,
+        {
+          credentials: "include",
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch logs");
+      }
+
+      const data = await response.json();
+      console.log("[Client] Logs fetched, length:", data.logs?.length || 0);
+
+      // Analyze logs with AI
+      console.log("[Client] Calling analyzeLogsWithAI");
+      await analyzeLogsWithAI(data.logs, workflowData);
+    } catch (err) {
+      console.error("[Client] Failed to fetch logs for analysis:", err);
+      // Don't show error to user, just skip AI analysis
     }
   };
 
@@ -102,10 +141,100 @@ export default function WorkflowPage() {
       const data = await response.json();
       setLogs(data.logs);
       setShowLogs(true);
+
+      // Only analyze if not already analyzed
+      if (!aiAnalysis && !aiLoading) {
+        analyzeLogsWithAI(data.logs);
+      }
     } catch (err) {
       setLogsError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLogsLoading(false);
+    }
+  };
+
+  const analyzeLogsWithAI = async (
+    logsContent: string,
+    workflowData?: WorkflowRun,
+  ) => {
+    const workflowToAnalyze = workflowData || workflow;
+
+    if (!workflowToAnalyze) {
+      console.log("[Client] analyzeLogsWithAI: workflow is null, returning");
+      return;
+    }
+
+    console.log(
+      "[Client] Starting AI analysis for workflow:",
+      workflowToAnalyze.id,
+      "conclusion:",
+      workflowToAnalyze.conclusion,
+    );
+    console.log("[Client] Logs content length:", logsContent?.length || 0);
+    setAiLoading(true);
+    setAiError("");
+
+    try {
+      console.log("[Client] Sending request to /api/ai/analyze");
+      const response = await fetch("/api/ai/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          logs: logsContent,
+          conclusion: workflowToAnalyze.conclusion,
+        }),
+      });
+
+      console.log("[Client] Response status:", response.status);
+      console.log("[Client] Response ok:", response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("[Client] Response error text:", errorText);
+        console.error("[Client] Response status:", response.status);
+
+        // Handle quota exceeded (429) specifically
+        if (response.status === 429) {
+          throw new Error("AI_QUOTA_EXCEEDED");
+        }
+
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("[Client] AI analysis response received");
+      console.log("[Client] Response data keys:", Object.keys(data));
+      console.log("[Client] Analysis length:", data.analysis?.length || 0);
+      console.log("[Client] Analysis content:", data.analysis);
+      setAiAnalysis(data.analysis);
+      console.log("[Client] AI analysis state updated");
+    } catch (err) {
+      console.error("[Client] AI analysis error occurred");
+      console.error("[Client] Error object:", err);
+      console.error("[Client] Error type:", typeof err);
+
+      let errorMessage = "Failed to analyze logs with AI";
+
+      if (err instanceof Error) {
+        console.error("[Client] Error message:", err.message);
+        console.error("[Client] Error stack:", err.stack);
+
+        // Handle quota exceeded error
+        if (err.message === "AI_QUOTA_EXCEEDED") {
+          errorMessage = "AI analysis quota exceeded. Please try again later.";
+        } else {
+          errorMessage = err.message;
+        }
+      } else if (typeof err === "object" && err !== null) {
+        console.error("[Client] Error properties:", Object.keys(err));
+      }
+
+      setAiError(errorMessage);
+    } finally {
+      console.log("[Client] AI analysis complete, setting loading to false");
+      setAiLoading(false);
     }
   };
 
@@ -316,7 +445,45 @@ export default function WorkflowPage() {
               {statusInfo.title}
             </h2>
           </div>
-          <p className="text-gray-300">{statusInfo.message}</p>
+
+          {aiLoading ?
+            <div className="flex items-center gap-3 text-gray-300">
+              <Loader className="animate-spin" size={16} />
+              <span>Analyzing logs with AI...</span>
+            </div>
+          : aiError ?
+            <div className="space-y-3">
+              <div
+                className={`p-3 rounded-lg ${aiError.includes("quota") ? "bg-yellow-500/10 border border-yellow-500/50" : "bg-red-500/10 border border-red-500/50"}`}
+              >
+                <p
+                  className={`text-sm font-medium ${aiError.includes("quota") ? "text-yellow-400" : "text-red-400"}`}
+                >
+                  {aiError.includes("quota") ?
+                    "⚠️ AI Analysis Temporarily Unavailable"
+                  : "❌ AI Analysis Failed"}
+                </p>
+                <p
+                  className={`text-sm mt-1 ${aiError.includes("quota") ? "text-yellow-300" : "text-red-300"}`}
+                >
+                  {aiError}
+                </p>
+              </div>
+              <p className="text-gray-300 text-sm">{statusInfo.message}</p>
+            </div>
+          : aiAnalysis ?
+            <div className="space-y-3">
+              <div className="border-b border-zinc-600 pb-3">
+                <h3 className="font-medium text-gray-200 mb-2">AI Analysis</h3>
+                <div className="text-gray-300 whitespace-pre-wrap leading-relaxed">
+                  {aiAnalysis}
+                </div>
+              </div>
+              <div className="text-sm text-gray-400">
+                <p>Analysis generated by Gemini AI based on workflow logs.</p>
+              </div>
+            </div>
+          : <p className="text-gray-300">{statusInfo.message}</p>}
         </div>
 
         {/* Logs Modal */}
