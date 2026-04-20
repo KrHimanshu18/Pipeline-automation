@@ -4,7 +4,6 @@ import {
   GitBranch,
   ExternalLink,
   RefreshCw,
-  Eye,
   AlertCircle,
   CheckCircle,
   Clock,
@@ -12,6 +11,7 @@ import {
   Loader,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 interface WorkflowRun {
   id: number;
@@ -38,8 +38,6 @@ export function WorkflowsViewer({
   const [workflows, setWorkflows] = useState<WorkflowRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedRun, setSelectedRun] = useState<WorkflowRun | null>(null);
-  const [showLogs, setShowLogs] = useState(false);
 
   useEffect(() => {
     fetchWorkflows();
@@ -146,76 +144,69 @@ export function WorkflowsViewer({
       : workflows.length > 0 ?
         <div className="space-y-3">
           {workflows.map((run) => (
-            <div
-              key={run.id}
-              className="border border-zinc-700 rounded-lg bg-zinc-900/50 hover:bg-zinc-800/50 transition-all p-4 space-y-3"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    {getStatusIcon(run.status, run.conclusion)}
-                    <div className="min-w-0">
-                      <h4 className="font-semibold text-white truncate">
-                        {run.name}
-                      </h4>
-                      <p className="text-xs text-gray-400">
-                        {new Date(run.createdAt).toLocaleString()}
-                      </p>
+            <div key={run.id} className="relative">
+              <Link
+                href={`/dashboard/repositories/${repositoryId}/workflows/${run.id}`}
+                className="block border border-zinc-700 rounded-lg bg-zinc-900/50 hover:bg-zinc-800/50 transition-all p-4 space-y-3"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      {getStatusIcon(run.status, run.conclusion)}
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-white truncate">
+                          {run.name}
+                        </h4>
+                        <p className="text-xs text-gray-400">
+                          {new Date(run.createdAt).toLocaleString()}
+                        </p>
+                      </div>
                     </div>
+
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                          run.status,
+                          run.conclusion,
+                        )}`}
+                      >
+                        {run.conclusion || run.status}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        Branch:{" "}
+                        <span className="font-mono text-gray-300">
+                          {run.branch}
+                        </span>
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        Commit:{" "}
+                        <span className="font-mono text-gray-300">
+                          {run.commitSha?.substring(0, 7) ?? "N/A"}
+                        </span>
+                      </span>
+                    </div>
+
+                    {run.commitMessage && (
+                      <p className="text-sm text-gray-400 mt-2 truncate">
+                        {run.commitMessage}
+                      </p>
+                    )}
                   </div>
 
-                  <div className="flex flex-wrap gap-2 items-center">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                        run.status,
-                        run.conclusion,
-                      )}`}
-                    >
-                      {run.conclusion || run.status}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      Branch:{" "}
-                      <span className="font-mono text-gray-300">
-                        {run.branch}
-                      </span>
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      Commit:{" "}
-                      <span className="font-mono text-gray-300">
-                        {run.commitSha?.substring(0, 7) ?? "N/A"}
-                      </span>
-                    </span>
+                  <div className="flex gap-2 shrink-0">
+                    {/* GitHub link will be positioned absolutely outside the Link */}
                   </div>
-
-                  {run.commitMessage && (
-                    <p className="text-sm text-gray-400 mt-2 truncate">
-                      {run.commitMessage}
-                    </p>
-                  )}
                 </div>
-
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => {
-                      setSelectedRun(run);
-                      setShowLogs(true);
-                    }}
-                    className="p-2 rounded-lg text-gray-400 hover:bg-zinc-700 hover:text-cyan-400 transition-colors"
-                    title="View Logs"
-                  >
-                    <Eye size={18} />
-                  </button>
-                  <a
-                    href={run.htmlUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-lg text-gray-400 hover:bg-zinc-700 hover:text-cyan-400 transition-colors"
-                    title="Open on GitHub"
-                  >
-                    <ExternalLink size={18} />
-                  </a>
-                </div>
-              </div>
+              </Link>
+              <a
+                href={run.htmlUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute top-4 right-4 p-2 rounded-lg text-gray-400 hover:bg-zinc-700 hover:text-cyan-400 transition-colors"
+                title="Open on GitHub"
+              >
+                <ExternalLink size={18} />
+              </a>
             </div>
           ))}
         </div>
@@ -231,103 +222,6 @@ export function WorkflowsViewer({
           </div>
         </div>
       }
-
-      {/* Logs Modal */}
-      {showLogs && selectedRun && (
-        <WorkflowLogsViewer
-          run={selectedRun}
-          repositoryId={repositoryId}
-          onClose={() => setShowLogs(false)}
-        />
-      )}
-    </div>
-  );
-}
-
-interface WorkflowLogsViewerProps {
-  run: WorkflowRun;
-  repositoryId: number;
-  onClose: () => void;
-}
-
-function WorkflowLogsViewer({
-  run,
-  repositoryId,
-  onClose,
-}: WorkflowLogsViewerProps) {
-  const [logs, setLogs] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetchLogs();
-  }, [run.id]);
-
-  const fetchLogs = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch(
-        `/api/github/logs?runId=${run.id}&repoId=${repositoryId}`,
-        {
-          credentials: "include",
-        },
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to fetch logs");
-      }
-
-      const data = await response.json();
-      setLogs(data.logs);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-zinc-900 border border-zinc-700 rounded-lg max-w-4xl w-full max-h-[80vh] flex flex-col space-y-4 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-zinc-700 pb-4">
-          <div>
-            <h3 className="text-xl font-bold text-white">{run.name}</h3>
-            <p className="text-sm text-gray-400">{run.commitMessage}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Logs */}
-        <div className="flex-1 overflow-auto bg-black rounded-lg p-4 font-mono text-sm">
-          {loading ?
-            <div className="flex items-center justify-center h-full">
-              <Loader className="animate-spin text-cyan-400" size={24} />
-            </div>
-          : error ?
-            <div className="text-red-400">{error}</div>
-          : <pre className="text-gray-300 whitespace-pre-wrap wrap-break-words">
-              {logs}
-            </pre>
-          }
-        </div>
-
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="px-4 py-2 rounded-lg bg-linear-to-r from-blue-500 to-cyan-500 text-white font-medium hover:from-blue-600 hover:to-cyan-600 transition-all"
-        >
-          Close
-        </button>
-      </div>
     </div>
   );
 }
